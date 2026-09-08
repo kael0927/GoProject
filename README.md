@@ -1,5 +1,22 @@
 # Golang
 ---
+>2026.9.8
+## 主要内容
+ - 文件的操作
+ - file包
+ - 输入流、输出流
+ - os.File封装所有文件相关操作 File是一个结构体
+ - 读取文件内容并显示在终端（带缓冲区的方式）bufio.NewReader() reader.ReadString
+ - defer：
+         1.当执行到defer语句 defer后面的语句先不执行 被压入独立的defer栈中
+         2.当函数执行完毕 再从defer栈 按照先入后出的方式出栈 执行
+         3.defer将语句放入栈时 同时会将相应的值拷贝
+         4.当函数执行完毕 可以及时释放函数创建的资源
+ - reader := bufio.NewReader(file)：
+         bufio.NewReader 为原始 io.Reader 附加 4KB 缓冲区，以代理模式接管后续读取操作，通过预读机制降低系统调用频次，而原始资源句柄的关闭职责保持不变。
+
+
+---
 > 2026.9.6
 
 ## 一、包的基本概念
