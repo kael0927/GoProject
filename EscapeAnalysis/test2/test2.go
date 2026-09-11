@@ -1,14 +1,18 @@
-package main 
-import(
+package main
+
+import (
 	"fmt"
 )
-type Data struct{}
+
+type Data struct {
+	x int
+}
 
 func dummy() *Data {
 	var c Data
 	return &c
 }
 
-func main(){
+func main() {
 	fmt.Println(dummy())
 }
