@@ -26,7 +26,7 @@ go func() {
 for i := 1; i <= 8; i++ {
 		wg.Add(1)
 		go func() {
-			wg.Done()
+			defer wg.Done()
 			for n := range numChan {// 遍历完自动退出（依赖 numChan 的关闭）
 				sum := 0
 				for i := 1; i <= n; i++{
