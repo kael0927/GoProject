@@ -1,7 +1,12 @@
 # Golang
 ---
 >2026/9/17
-
+1. 为什么用 buf[:n] 而不是 buf？
+因为 buf 是 1024 字节，但客户端可能只发了 5 字节。buf[:n] 才是真正的数据，其余 1019 字节是垃圾。
+2. 为什么用 go process(conn) 而不是直接 process(conn)？
+如果用 process(conn)（没有 go），服务端会被第一个客户端堵死，无法接收第二个客户端。加上 go，每个客户端独立并行服务。
+3. 服务端用 Listen + Accept + go process 服务海量客户端；客户端用 Dial + Write 主动发送数据；conn 是双方通信的专属管道，Read 和 Write 一读一写，TCP 保证数据可靠到达。
+4. 
 ---
 >2026.9.15
 *服务段的处理流程*
