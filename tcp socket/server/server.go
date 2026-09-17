@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net" //做网络socket开发时，net包含我们需要所有的方法和函数
-	"io"
+	_"io"
 )
 
 func process(conn net.Conn) {
@@ -17,8 +17,8 @@ func process(conn net.Conn) {
 		//2.如果客户端没有write[发送]，那么协程就阻塞在此
 		fmt.Println("服务器在等待客户端%s发消息\n" + conn.RemoteAddr().String())
 		n, err := conn.Read(buf) //从conn读取
-		if err != io.EOF {
-			fmt.Println("客户端已退出")
+		if err != nil {
+			fmt.Printf("客户端已退出,err=%v",err)
 			return 
 		}
 		//3.显示客户端发送的内容到服务器的终端
