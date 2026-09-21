@@ -8,7 +8,18 @@
    原有User类的实例无法直接访问到所属Server的内部属性，因此需要在User结构体中新增一个指向所属Server实例的属性。在调用NewUser初始化用户实例时，将当前Server自身的地址作为入参传入，完成用户与所属服务端的绑定关联，后续即可通过User实例直接操作Server的相关资源。
 2. conn 是一条 TCP 连接，底层是一个操作系统文件描述符，代表"服务器和某个客户端之间"的双向通信管道。它由 listener.Accept() 创建，由conn.Read和
    conn.Write 使用，由 conn.Close() 释放。每个客户端一条，独立服务，互不干扰。
-3. 
+3. func Split:
+   func Split(s, sep string) []string:用去掉s中出现的sep的方式进行分割，会分割到结尾，并返回生成的所有片段组成的切片（每一个sep都会进行一次切割，即使两个sep相邻，也会进行两次切割）。如果sep为空字符，Split会将s切分成每一个unicode码值一个字符串。
+4. 
+```u.server.mapLock.Lock()
+delete(u.server.OnlineMap,u.Name)
+u.server.OnlineMap[newName] = u
+u.Name = newName
+u.server.mapLock.Unlock()
+u.SendMsg("更新用户名" + u.Name +"\n")
+```
+此处为什么不能直接修改用户名：map 的键不能直接改，必须删旧插新；必须同步更新 u.Name 和 map 键，否则数据不一致；
+
 ---
 >2026/9/20
 ### 基础设施构建
