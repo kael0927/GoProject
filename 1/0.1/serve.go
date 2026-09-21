@@ -32,7 +32,7 @@ func (s *Server) Handler(conn net.Conn) {
 
 	user.Online()
 
-	isLive := make(chan bool)
+	isLive := make(chan bool)//监听用户是否活跃的channel
 	
 	//接受客户端发送的消息
 	go func() {
@@ -50,17 +50,21 @@ func (s *Server) Handler(conn net.Conn) {
 
 		user.DoMessage(msg)
 
-		isLive <- true
+		isLive <- true//用户的任意消息，代表当前用户是一个活跃的
 	}()
     //阻塞当前 Handler，保持连接不关闭
 	for{
 		select{
 		case <- isLive:
+			//当前用户是活跃的，应该重置定时器
+			//不做任何事情，为了激活select，更新下面的定时器
 		case <- time.After(time.Second * 10):
+			//已经超时
+			//将当前的User强制关闭
 			user.SendMsg("你已被踢出")
-			close(user.C)
-			conn.Close()
-			return
+			close(user.C)//销毁用到的资源
+			conn.Close()//关闭连接
+			return//退出当前Handler
 		}
 	}
 }
