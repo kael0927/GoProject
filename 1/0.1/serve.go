@@ -27,22 +27,16 @@ func NewServer(ip string, port int) *Server {
 }
 
 func (s *Server) Handler(conn net.Conn) {
-	user := NewUser(conn) //创建新用户
+	user := NewUser(conn,s) //创建新用户
 
-	//将用户加入在线列表 (加锁保护)
-	s.mapLock.Lock()
-	s.OnlineMap[user.Name] = user
-	s.mapLock.Unlock()
-
-	//广播该用户上线的消息
-	s.BroadCast(user,"已上线")
+	user.Online()
 
 	//接受客户端发送的消息
 	go func() {
 		buf := make([]byte,4098)
 		n,err := conn.Read(buf)
 		if n == 0 {
-			s.BroadCast(user,"下线")
+			user.Offline()
 		}
 		if err != nil && err != io.EOF{
 			fmt.Println("conn read err=",err)
@@ -51,7 +45,7 @@ func (s *Server) Handler(conn net.Conn) {
 
 		msg := string(buf[:n-1])
 
-		s.BroadCast(user,msg)
+		user.DoMessage(msg)
 
 	}()
 
