@@ -46,7 +46,7 @@ func (s *Server) Handler(conn net.Conn) {
 			return
 		}
 
-		msg := string(buf[:n-1])
+		msg := string(buf[:n-1]) 
 
 		user.DoMessage(msg)
 
