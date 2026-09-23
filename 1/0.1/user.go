@@ -63,7 +63,7 @@ func (u *User) DoMessage(msg string) {
 		u.server.mapLock.Unlock()
 	} else if len(msg) > 7 && msg[:7] == "rename|" {
 		newName := strings.Split(msg,"|")[1]
-		_,ok := u.server.OnlineMap[newName]
+		_,ok := u.server.OnlineMap[newName] 
 		if ok {
 			u.SendMsg("该用户名已存在\n")
 		} else {
