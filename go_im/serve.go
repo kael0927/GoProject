@@ -51,7 +51,10 @@ func (s *Server) Handler(conn net.Conn) {
 		buf := make([]byte,4096)
 		n,err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("客户端断开：",err)
+			s.mapLock.Lock()
+			delete(s.OnlineMap,user.Name)
+			s.mapLock.Unlock()
+			s.BroadCast(user,"已下线")
 			return		//结束Handler协程
 		} else {
 			msg := string(buf[:n-1])

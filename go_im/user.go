@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 	"fmt"
+	"strings"	
 )
 
 type User struct {
@@ -45,6 +46,28 @@ func (u *User) DoMsg(msg string) {
 			u.SendMsg(OnlineMsg)
 		}
 		u.Server.mapLock.Unlock()
+	} else if len(msg) >= 7 && msg[:7] == "rename|" {
+		newName := strings.TrimSpace(msg[7:])
+		_,ok := u.Server.OnlineMap[newName] 
+		if ok  {
+			u.SendMsg("当前用户名被使用")
+		} else {
+			u.Server.mapLock.Lock()
+			delete(u.Server.OnlineMap,u.Name)
+			u.Server.OnlineMap[newName] = u
+			u.Server.mapLock.Unlock()
+			u.Name = newName
+			u.SendMsg("你已经更新用户名：" + u.Name)
+		}
+	} else if len(msg) >=3 && msg[:3] == "to|" {
+		parts := strings.Split(msg,"|")
+		user,ok := u.Server.OnlineMap[parts[1]]
+		if !ok {
+			u.SendMsg("用户名不存在")
+		} else {
+			msg := fmt.Sprintf("[私聊]%s:%s",u.Name,parts[2])
+			user.C <- msg
+		}
 	} else {
 		u.Server.BroadCast(u,msg)
 	}
