@@ -32,6 +32,7 @@ func (s *Server) Handler(conn net.Conn) {
 	NewUser := NewUser(conn)
 	
 
+
 }
 
 func (s *Server) Start(serverIp string,serverPort int) {
