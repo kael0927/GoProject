@@ -11,7 +11,7 @@ type User struct {
 	conn net.Conn
 }
 
-func (u *User) NewUser(conn net.Conn) *User {
+func NewUser(conn net.Conn) *User {
 	userAddr := conn.RemoteAddr().String()
 	user := &User{
 		Name: userAddr,
@@ -19,7 +19,7 @@ func (u *User) NewUser(conn net.Conn) *User {
 		C:    make(chan string),
 		conn: conn,
 	}
-	go u.ListenMsg()
+	go user.ListenMsg()
 	return user
 }
 

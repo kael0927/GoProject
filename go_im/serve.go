@@ -10,7 +10,7 @@ type Server struct {
 	ServerIp   string
 	ServerPort int
 	Message    chan string
-	OnlienMap  map[string]*User
+	OnlineMap  map[string]*User
 	mapLock    sync.RWMutex
 }
 
@@ -18,7 +18,7 @@ func (s *Server) NewServer(serverIp string, serverPort int) *Server {
 	Server := &Server{
 		ServerIp:   serverIp,
 		ServerPort: serverPort,
-		OnlienMap:  make(map[string]*User),
+		OnlineMap:  make(map[string]*User),
 		Message:    make(chan string),
 	}
 	return Server
@@ -28,7 +28,7 @@ func (s *Server) ListenMsger() {
 	for {
 		msg := <-s.Message //从广播入口取消息
 		s.mapLock.Lock()   //加锁
-		for _, user := range s.OnlienMap {
+		for _, user := range s.OnlineMap {
 			user.C <- msg //投递到每个用户的收件箱
 		}
 		s.mapLock.Unlock() //解锁
@@ -43,9 +43,9 @@ func (s *Server) BroadCast(user User, msg string) {
 func (s *Server) Handler(conn net.Conn) {
 	user := NewUser(conn)
 	s.mapLock.Lock()
-	s.OnlienMap[user.Name] = user
+	s.OnlineMap[user.Name] = user
 	s.mapLock.Unlock()
-	go s.BroadCast(user, "已上线")
+	s.BroadCast(user, "已上线")
 	select {}
 }
 
