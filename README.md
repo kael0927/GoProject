@@ -1,8 +1,10 @@
 # Golang
---- IM-复现
+## IM-复现
+--- 
 1. defer 关闭监听器
 2. 启动广播分发协程：go s.ListenMessager()  
 3. conn.RemoteAddr()
+4. u.conn.Write([]byte(msg + "\n"))
 ---
 ## 项目实现-海量用户即使通讯系统
 ---
