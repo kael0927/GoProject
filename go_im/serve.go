@@ -14,7 +14,7 @@ type Server struct {
 	mapLock    sync.RWMutex
 }
 
-func (s *Server) NewServer(serverIp string, serverPort int) *Server {
+func NewServer(serverIp string, serverPort int) *Server {
 	Server := &Server{
 		ServerIp:   serverIp,
 		ServerPort: serverPort,
@@ -35,22 +35,33 @@ func (s *Server) ListenMsger() {
 	}
 }
 
-func (s *Server) BroadCast(user User, msg string) {
+func (s *Server) BroadCast(user *User, msg string) {
 	sendMsg := fmt.Sprintf("[%s]%s:%s", user.Addr, user.Name, msg)
 	s.Message <- sendMsg
+	
 }
 
 func (s *Server) Handler(conn net.Conn) {
-	user := NewUser(conn)
+	user := NewUser(conn,s)
 	s.mapLock.Lock()
 	s.OnlineMap[user.Name] = user
 	s.mapLock.Unlock()
 	s.BroadCast(user, "已上线")
-	select {}
+	for {
+		buf := make([]byte,4096)
+		n,err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("客户端断开：",err)
+			return		//结束Handler协程
+		} else {
+			msg := string(buf[:n-1])
+			user.DoMsg(msg)
+		}
+	}
 }
 
-func (s *Server) Start(serverIp string, serverPort int, conn net.Conn) {
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s %d", serverIp, serverPort))
+func (s *Server) Start() {
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.ServerIp, s.ServerPort))
 	if err != nil {
 		fmt.Println("net.Listen err=", err)
 		return
